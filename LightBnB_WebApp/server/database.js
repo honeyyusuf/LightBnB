@@ -23,7 +23,7 @@ const getUserWithEmail = function(email) {
     values:[email]
   };
   return pool.query(query)
-    .then(res => res.rows)
+    .then(res => res.rows[0])
     .catch(err => err.message);
   // let user;
   // for (const userId in users) {
@@ -50,7 +50,7 @@ const getUserWithId = function(id) {
     values: [id]
   };
   return pool.query(query)
-    .then(res => res.rows)
+    .then(res => res.rows[0])
     .catch(err => err.message);
   
 };
@@ -73,7 +73,7 @@ const addUser =  function(user) {
     values: [user.name,user.email, user.password]
   };
   return pool.query(query)
-    .then(res => res.rows)
+    .then(res => res.rows[0])
   
     .catch(err => err.message);
 };
@@ -98,9 +98,9 @@ const getAllReservations = function(guest_id, limit = 10) {
     AND reservations.end_date < now()::date
     GROUP BY properties.id, reservations.id
    ORDER BY reservations.start_date
-    LIMIT 10;
-    return getAllProperties(null, 2)`,
-    values:[guest_id]
+    LIMIT $2;
+    return getAllProperties(null, 2);`,
+    values:[guest_id,limit]
   };
   return pool.query(query)
     .then(res => res.rows)
@@ -128,7 +128,7 @@ const getAllProperties = function(options, limit = 10) {
   let queryString = `
   SELECT properties.*, avg(property_reviews.rating) as average_rating
   FROM properties
-  JOIN property_reviews ON properties.id = property_id
+  JOIN property_reviews ON properties.id = property_id;
   `;
 
   // 3
@@ -170,10 +170,10 @@ const addProperty = function(property) {
   const query = {
     text: `INSERT INTO properties (
       title, description,owner_id cover_photo_url, thumbnail_photo_url, cost_per_night, parking_spaces, number_of_bathrooms, number_of_bedrooms, active, province, city, country, street, post_code)VALUES ($1, $2, $3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING *;`,
-    values: [property.title, property.description,property.ownwr_id,property.cover_photo_url, property.thumbnail_photo_url,property. cost_per_night, property.parking_spaces, property.number_of_bathrooms, property.number_of_bedrooms,property.active, property.province,property.city, property.country,property.street, property.post_code]
+    values: [property.title, property.description,property.owner_id,property.cover_photo_url, property.thumbnail_photo_url,property. cost_per_night, property.parking_spaces, property.number_of_bathrooms, property.number_of_bedrooms,property.active, property.province,property.city, property.country,property.street, property.post_code]
   };
   return pool.query(query)
-    .then(res => res.rows)
+    .then(res => res.rows[0])
   
     .catch(err => err.message);
 };
