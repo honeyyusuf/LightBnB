@@ -67,13 +67,15 @@ const addUser =  function(user) {
   // user.id = userId;
   // users[userId] = user;
   // return Promise.resolve(user);
+
   const query = {
-    text: `INSERT INTO users (name,email,password) VALUES ($1, $2, $3, $4) RETURNING *`,
+    text: `INSERT INTO users (name,email,password) VALUES ($1, $2, $3) RETURNING *;`,
     values: [user.name,user.email, user.password],
   };
   return pool.query(query)
-  .then(res => res.rows)
-  .catch(err => err.message);
+    .then(res => res.rows)
+  
+    .catch(err => err.message);
 };
 exports.addUser = addUser;
 
@@ -105,7 +107,7 @@ const getAllProperties = function(options, limit = 10) {
   // return Promise.resolve(limitedProperties);
   return pool.query(`
   SELECT * FROM properties
-  LIMIT $1
+  LIMIT $1;
   `, [limit])
     .then(res => res.rows);
 
