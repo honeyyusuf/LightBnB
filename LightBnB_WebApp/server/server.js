@@ -31,6 +31,7 @@ app.use('/users', userRouter);
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.get("/test", (req, res) => {
+  //console.log(req.body);
   res.send("🤗");
 });
 
